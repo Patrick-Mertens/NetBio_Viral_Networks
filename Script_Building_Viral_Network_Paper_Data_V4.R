@@ -14,8 +14,8 @@ library(igraph)  #For graph data structures and algorithms
 setwd("C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results")
 ####Individual paths
 #Directory paths for saving the networks
-ebv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/EBV_Networks"
-hpv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/HPV16_Networks"
+ebv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/EBV_Networks_V2"
+hpv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/HPV16_Networks_V2"
 #File
 excel_file_path <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Data/Viral_perturbation_study/Dataset_S1.xls" 
 
@@ -102,9 +102,9 @@ create_edges <- function(df, interaction_type, debug = FALSE) {
     distinct() %>%
     mutate(
       #Modify the Source to include the intermediate protein if present
-      Source = ifelse(IntermediateFlag, paste0(Source, "-", Intermediate), Source),
+      Source = ifelse(IntermediateFlag, paste0(Source, "--", Intermediate), Source),
       #Modify the Target to indicate disease association if present
-      Target = ifelse(DiseaseAssociated, paste0(Target, "*"), Target)
+      Target = ifelse(DiseaseAssociated, paste0(Target, "**"), Target)
     ) %>%
     select(Source, Target) %>%
     distinct() #Removing double edges, and such

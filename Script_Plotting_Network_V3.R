@@ -10,8 +10,8 @@ library(igraph)
 setwd("C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results")
 #Individual paths
 #Directory paths for saving the networks
-ebv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/EBV_Networks"
-hpv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/HPV16_Networks"
+ebv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/EBV_Networks_V2"
+hpv_dir <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Results/Viral_Pertubation_Results/HPV16_Networks_V2"
 #File
 excel_file_path <- "C:/Users/Shade/Desktop/Master/Network Biology/Project_Data/Viral_perturbation_study/Dataset_S1.xls" 
 
@@ -39,10 +39,11 @@ create_network_from_rds <- function(rds_path, style_name, df_protein_types,virus
   
   #Set the 'type' attribute based on protein lists
   V(network)$type <- sapply(V(network)$name, function(n) {
-    if (grepl("^[^-]+-[^-]+$", n)) { #Regex to ensure "-" is between characters
+    if (grepl("^[^-]+--[^-]+$", n)) { #Regex to ensure "--" is between characters
       return("complex") #Nodes with a dash between characters are intermediates forming a complex
-    } else if (grepl("\\*", n)) {
-      return("disease") #Nodes with an asterisk are associated with a disease
+    } else if (grepl("\\*\\*$", n)) {
+      return("disease")
+    #Nodes with an asterisk are associated with a disease
     } else if (n %in% df_protein_types$viral_proteins) {
       return("viral")
     } else {
@@ -166,10 +167,28 @@ RCy3::setNodeColorDefault(new.color = node_colors["default"], style.name = style
 #                          colors = c(node_colors["viral"], node_colors["complex"], node_colors["human"], node_colors["disease"]), 
 #                          style.name = style_name)
 
-RCy3::setNodeColorMapping("type", 
-                    c("viral", "complex", "human", "disease"), 
-                    c(node_colors["viral"], node_colors["complex"], node_colors["human"], node_colors["disease"]),
-                    style.name = style_name, mapping.type = "d")
+
+
+##COLOURING, #THis works some times, really weird
+colouring <- FALSE
+if(colouring){
+  networks_list<- RCy3::getNetworkList()
+  Whole_networks <- c("EBV_EBV_combined_network_Network","HPV_HPV16_combined_network_Network")
+  
+  for (net in Whole_networks) {
+    network_name <- Whole_networks[net]
+    ID <- RCy3::getNetworkSuid(title = network_name)
+    RCy3::setNodeColorMapping("type",
+                              c("viral", "complex", "human", "disease"),
+                              c(node_colors["viral"], node_colors["complex"], node_colors["human"], node_colors["disease"]),
+                              style.name = style_name, mapping.type = "d",network = ID)
+    
+  }
+  # RCy3::setNodeColorMapping("type",
+  #                     c("viral", "complex", "human", "disease"),
+  #                     c(node_colors["viral"], node_colors["complex"], node_colors["human"], node_colors["disease"]),
+  #                     style.name = style_name, mapping.type = "d")
+}
 #Get the list of RDS files for EBV
 ebv_files <- list.files(ebv_dir, pattern = "\\.rds$", full.names = TRUE)
 
